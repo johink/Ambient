@@ -1,0 +1,9 @@
+PLAN:
+Scrape patch notes for DOTA 2, CS:GO, and PUBG
+Scrape Steam community forums for these games
+Design predictive features from post content, as well as post and user metadata
+Design target variable as function of temporal relation between post contents and patch notes
+
+TODO:
+Create CRISP-DM document
+Begin scraping attempts
