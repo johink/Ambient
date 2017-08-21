@@ -95,3 +95,52 @@ result_string = json.dumps(results)
 with open("c:/users/john/desktop/ambient/pubg_notes.json", "w") as f:
     f.write(result_string)
     
+#%%
+#Scrape DOTA 2 patch notes
+#results = []
+base_url = "https://dota2.gamepedia.com"
+page_to_get = "/August_19,_2017_Patch"
+while True:
+    response = requests.get(base_url + page_to_get)
+    if response.status_code != 200:
+        print("Received status code {} on page {}".format(page.status_code, page_to_get))
+        break
+    
+    d = {}
+    d["content"] = []
+    d["topics"] = set()
+
+    soup = bs4.BeautifulSoup(response.text, "lxml")
+    
+    d["post_date"] = " ".join(soup.find('h1', 'firstHeading').text.split()[:-1])
+    
+    soup = soup.find('div', 'mw-content-ltr')
+    try:
+        page_to_get = soup.find('td').find('a')['href']
+    except:
+        print("Couldn't find previous patch on page {}".format(page_to_get))
+        break
+
+    
+    soup = soup.find('div')
+    category = None
+    
+    for line in soup.children:
+        if isinstance(line, bs4.NavigableString):
+            continue
+        elif line.name in ['h1','h2','h3','h4']:
+            category = line.text
+        elif line.name == 'ul':
+            for change in line.find_all('li'):
+                d['content'].append({'topic':category, 'change':change.text}) 
+                d["topics"].add(category)
+    
+    results.append(d)
+    print("Patch on {}\nTopics {}".format(d['post_date'], d['topics']))
+    time.sleep(5)
+
+for item in results:
+    item['topics'] = list(item['topics'])
+result_string = json.dumps(results)
+with open("c:/users/john/desktop/ambient/dota2_notes.json", "w") as f:
+    f.write(result_string)
