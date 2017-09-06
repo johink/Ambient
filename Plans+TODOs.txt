@@ -1,9 +1,30 @@
-PLAN:
-Scrape patch notes for DOTA 2, CS:GO, and PUBG
-Scrape Steam community forums for these games
-Design predictive features from post content, as well as post and user metadata
-Design target variable as function of temporal relation between post contents and patch notes
+# = Finished
+- = In-process
 
-TODO:
-Create CRISP-DM document
-Begin scraping attempts
+PLAN:
+#Scrape patch notes for DOTA 2, CS:GO, and PUBG
+#Scrape Steam community forums for these games
+Design predictive features from post content, as well as post and user metadata
+-Design target variable as function of temporal relation between post contents and patch notes
+Build predictive model with designed target variable
+  ...Separate models per game?
+Test against most recent subset of data
+Migrate data into database
+Build website to discuss project and methods
+Build dashboard to allow interaction with stored data
+Add user feedback functionality
+Design nightly jobs for new post retrieval and model rebuilding
+
+Scraping VM Notes...
+apt install:
+  python
+  python-pip
+
+pip install:
+  pyvirtualdisplay
+  xvfb
+  selenium
+  bs4  
+
+wget:
+  https://github.com/mozilla/geckodriver/releases
