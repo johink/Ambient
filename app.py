@@ -32,29 +32,49 @@ def dashboard(gameid):
 
     return render_template('dashboard.html', thread_data = thread_data, post_data = post_data, other_links = other_links)#include kwargs of template data here
 
-@app.route('/vote/thread/up/<int:threadid>', methods=['GET'])
+@app.route('/vote/thread/up/<int:threadid>', methods=['POST'])
 def vote_thread_up(threadid):
     if not threadid:
         return
     else:
-        db.increment_thread(threadid)
+        try:
+            db.increment_thread(threadid)
+            return True
+        except:
+            return False
 
-@app.route('/vote/thread/down/<int:threadid>', methods=['GET'])
+@app.route('/vote/thread/down/<int:threadid>', methods=['POST'])
 def vote_thread_down(threadid):
     if not threadid:
         return
     else:
-        db.decrement_thread(threadid)
+        try:
+            db.decrement_thread(threadid)
+            return True
+        except:
+            return False
 
-@app.route('/vote/post/up/<int:threadid>/<int:responsenum>', methods=['GET'])
+@app.route('/vote/post/up/<int:threadid>/<int:responsenum>', methods=['POST'])
 def vote_post_up(threadid, responsenum):
+    print(threadid)
+    print(responsenum)
     if threadid and responsenum:
-        db.increment_post(threadid, responsenum)
+        try:
+            db.vote_post(threadid, responsenum, 1)
+            return "Successful"
+        except:
+            return "DBError"
 
-@app.route('/vote/post/down/<int:threadid>/<int:responsenum>', methods=['GET'])
+@app.route('/vote/post/down/<int:threadid>/<int:responsenum>', methods=['POST'])
 def vote_post_down(threadid, responsenum):
+    print(threadid)
+    print(responsenum)
     if threadid and responsenum:
-        db.decrement_post(threadid, responsenum)
+        try:
+            db.vote_post(threadid, responsenum, 0)
+            return "Successful"
+        except:
+            return "DBError"
 
 if __name__ == '__main__':
     #running=True

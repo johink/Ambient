@@ -1,5 +1,38 @@
+<head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<title>Ambient Dashboard</title>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<script>
+displaythread = function(thread_id){
+alert("displaying " + thread_id);
+}
+displaypost = function(thread_id, reply_num){
+alert("displaying post #" + reply_num + " of thread " + thread_id);
+}
+votepostdown = function(thread_id, reply_num){
+$.ajax({
+url: '/vote/post/down/'+thread_id+'/'+reply_num, 
+type:"POST",
+success: function(result){
+if(result == "Successful"){alert("SUCCESS!")}
+else{alert("Difficulty communicating with database.  Please try again later!")}
+}});
+}
+votepostup = function(thread_id, reply_num){
+$.ajax({
+url: '/vote/post/up/'+thread_id+'/'+reply_num, 
+type:"POST",
+success: function(result){
+if(result == "Successful"){alert("SUCCESS!")}
+else{alert("Difficulty communicating with database.  Please try again later!")}
+}});
+}
 
+</script>
+</head>
 <div class="container" padding="20px">
 <h1>Ambient Dashboard</h1>
 
@@ -12,41 +45,35 @@
 <div class="threads">
 <h2>Threads</h2>
 
-<table border="1" class="table table-hover">
-<tbody>
 {% for item in thread_data %}
+<div class="thread_item" id="{{item['thread_id']}}">
 <a href="#" onclick="displaythread({{item['thread_id']}});">
-<tr>
-<td class="author">{{ item['author_name'] }}</td>
-<td class="postedon">{{ item['posted_on'] }}</td>
-<td class="numreplies">{{ item['num_replies'] }}</td>
-<td class="title">{{ item['title'] }}</td>
-<td class="votedown"><a href='/vote/thread/down/{{item["thread_id"]}}'>DOWN</a></td>
-<td class="voteup"><a href='/vote/thread/up/{{item["thread_id"]}}'>UP</a></td>
-</tr>                
+<p class="author">{{ item['author_name'] }}</p>
+<p class="postedon">{{ item['posted_on'] }}</p>
+<p class="numreplies">{{ item['num_replies'] }}</p>
+<p class="title">{{ item['title'] }}</p>
 </a>
+<p class="votedown"><a href="/vote/thread/down/{{item['thread_id']}}">DOWN</a></p>
+<p class="voteup"><a href='/vote/thread/up/{{item["thread_id"]}}'>UP</a></p>
+</div>
 {% endfor %}          
 </tbody>
 </table>
 </div>
 <div class="posts">
 <h2>Posts</h2>
-<table border="1" class="table table-hover">
-<tbody>
 {% for item in post_data %}
-<a href="#" onclick="displaypost({{item['thread_id']}},{{item['reply_num']}});">
-<tr>
-<td class="author">{{ item['author_name'] }}</td>
-<td class="postedon">{{ item['posted_on'] }}</td>
-<td class="replyno">{{ item['reply_num'] }}</td>
-<td class="title">{{ item['title'] }}</td>
-<td class="content">{{ item['content'] }}</td>
-<td class="votedown"><a href='/vote/post/down/{{item["thread_id"]}}/{{item["reply_num"]}}'>DOWN</a></td>
-<td class="voteup"><a href='/vote/post/up/{{item["thread_id"]}}/{{item["reply_num"]}}'>UP</a></td>
-</tr>                
+<div class="post_item" id="{{item['thread_id']}}{{item['response_num']}}">
+<a href="#" onclick="displaypost('{{item['thread_id']}}','{{item['response_num']}}');">
+<p class="author">{{ item['author_name'] }}</p>
+<p class="postedon">{{ item['posted_on'] }}</p>
+<p class="replyno">{{ item['response_num'] }}</p>
+<p class="title">{{ item['title'] }}</p>
+<p class="content">{{ item['content'] }}</p>
 </a>
+<p class="votedown"><a onclick="votepostdown('{{item.thread_id}}','{{item.response_num}}');">DOWN</a></p>
+<p class="voteup"><a onclick="votepostup('{{item.thread_id}}','{{item.response_num}}');">UP</a></p>
+</div>
 {% endfor %}          
-</tbody>
-</table>
 </div>
 </div>

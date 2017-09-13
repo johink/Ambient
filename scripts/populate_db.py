@@ -63,6 +63,7 @@ connection = psycopg2.connect('dbname={} user={} password={}'.format(dbname, dbu
 cur = connection.cursor()
 
 cur.execute("ALTER TABLE threads ADD PRIMARY KEY (thread_id);")
+cur.execute("ALTER TABLE training ADD PRIMARY KEY (thread_id, response_num, score);")
 connection.commit()
 cur.close()
 connection.close()

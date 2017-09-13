@@ -6,6 +6,24 @@ import sqlalchemy
 
 get_first = lambda x: x.iloc[0]
 
+def date_helper(post_time):
+    datediff = pd.datetime.now() - post_time
+    if datediff.days == 0:
+        hours = datediff.total_seconds() / 3600
+        if hours == 0:
+            return "Now"
+        elif hours == 1:
+            return "An hour ago"
+        else:
+            return "{} hours ago".format(hours)
+    elif datediff.days <= 31:
+        if datediff.days == 1:
+            return "Yesterday"
+        else:
+            return "{} days ago".format(datediff.days)
+    else:
+        return post_time.strftime("%b %d, %Y")
+
 class AmbientDataModel(object):
     def __init__(self):
         self.conn = None
@@ -21,6 +39,7 @@ FROM posts
 INNER JOIN threads ON posts.thread_id = threads.thread_id;
 """, 
 self.engine)
+        self.raw_data.posted_on = pd.to_datetime(self.raw_data.posted_on, unit='ms')
         self.game_set = set(self.raw_data.game_id.unique())
 
         self.thread_weights = self.raw_data.groupby('thread_id').agg({'usefulness':np.mean, 'response_num': len, 'title':get_first, 'game_id':get_first, 'author_name':get_first, 'num_replies':get_first, 'creation_date':get_first})
@@ -28,9 +47,11 @@ self.engine)
         self.thread_weights.drop('response_num', axis = 1, inplace = True)
         self.thread_weights.rename(columns = {"creation_date":"posted_on"}, inplace = True)
         self.thread_weights.sort_values('usefulness', ascending = False, inplace = True)
+        self.thread_weights = self.thread_weights.reset_index().rename(columns = {"index":"thread_id"})
+        self.thread_weights.posted_on = pd.to_datetime(self.thread_weights.posted_on, unit='s')
 
-
-
+        self.raw_data.posted_on = self.raw_data.posted_on.apply(date_helper)
+        self.thread_weights.posted_on = self.thread_weights.posted_on.apply(date_helper)
 
         self.mapper = {
                570 : "DOTA 2",
@@ -59,4 +80,18 @@ self.engine)
 
     def get_other_links(self, game_id):
         return [{"game_id" : gid, "game_name" : self.mapper[gid] } for gid in self.game_set if gid != game_id]
-  
+ 
+    def vote_post(self, thread_id, response_num, score):
+        self._grab_db_conn()
+        print("Voting post #{} in thread {} as {}".format(response_num, thread_id, score))
+        query = """
+INSERT INTO training (content, response_num, thread_id, posted_on, score, votes)
+SELECT content, response_num, thread_id, to_timestamp(posted_on/1000), {}, 1 
+FROM posts 
+WHERE thread_id = {} AND response_num = {} 
+ON CONFLICT (thread_id, response_num, score) 
+DO UPDATE SET votes = training.votes + 1;
+""".format(score, thread_id, response_num)
+        print(query)
+        self.cur.execute(query)
+        self._close_db_conn()
