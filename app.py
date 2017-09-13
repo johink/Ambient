@@ -30,51 +30,40 @@ def dashboard(gameid):
     post_data = db.get_post_data(gameid)
     other_links = db.get_other_links(gameid)
 
-    return render_template('dashboard.html', thread_data = thread_data, post_data = post_data, other_links = other_links)#include kwargs of template data here
+    return render_template('dashboard.html', thread_data = thread_data, post_data = post_data, other_links = other_links)
 
 @app.route('/vote/thread/up/<int:threadid>', methods=['POST'])
 def vote_thread_up(threadid):
-    if not threadid:
-        return
-    else:
-        try:
-            db.increment_thread(threadid)
-            return True
-        except:
-            return False
+    try:
+        db.vote_thread(threadid, 1)
+        return "Successful"
+    except Exception as e:
+        print(e)
+        return "DBError"
 
 @app.route('/vote/thread/down/<int:threadid>', methods=['POST'])
 def vote_thread_down(threadid):
-    if not threadid:
-        return
-    else:
-        try:
-            db.decrement_thread(threadid)
-            return True
-        except:
-            return False
+    try:
+        db.vote_thread(threadid, 0)
+        return "Successful"
+    except:
+        return "DBError"
 
 @app.route('/vote/post/up/<int:threadid>/<int:responsenum>', methods=['POST'])
 def vote_post_up(threadid, responsenum):
-    print(threadid)
-    print(responsenum)
-    if threadid and responsenum:
-        try:
-            db.vote_post(threadid, responsenum, 1)
-            return "Successful"
-        except:
-            return "DBError"
+    try:
+        db.vote_post(threadid, responsenum, 1)
+        return "Successful"
+    except:
+        return "DBError"
 
 @app.route('/vote/post/down/<int:threadid>/<int:responsenum>', methods=['POST'])
 def vote_post_down(threadid, responsenum):
-    print(threadid)
-    print(responsenum)
-    if threadid and responsenum:
-        try:
-            db.vote_post(threadid, responsenum, 0)
-            return "Successful"
-        except:
-            return "DBError"
+    try:
+        db.vote_post(threadid, responsenum, 0)
+        return "Successful"
+    except:
+        return "DBError"
 
 if __name__ == '__main__':
     #running=True

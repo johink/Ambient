@@ -1,0 +1,88 @@
+p {
+  
+}
+
+span {
+  display: inline-block;
+}
+
+a {
+  color: #333;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #555;
+  text-decoration: none;
+}
+
+.glyphicon {
+  font-size: 1.5em;
+}
+
+.glyphicon-ok:hover {
+  color:green;
+}
+
+.glyphicon-remove:hover {
+  color:red;
+}
+
+.container {
+  width: 90vw;
+}
+
+.threads {
+  float: left;
+  width: 40vw;
+  padding-top: 50px;
+}
+
+.posts {
+  float: right;
+  width: 40vw;
+  padding-top: 50px;
+}
+
+.author {
+  font-style: oblique;
+}
+
+.postedon {
+  float: right;
+  clear: both;
+}
+
+.numreplies {
+
+}
+
+.title {
+  font-weight: bold;
+  font-size: 1.5em;
+  width: 80%;
+}
+
+.votedown {
+  float: right;
+}
+
+.voteup {
+  float: right;
+}
+
+.posttitle {
+  font-weight: bold;
+}
+
+.replyno {
+  font-size: .8em;
+}
+
+.content {
+  width: 80%;
+}
+
+.disableclick {
+  pointer-events: none;
+}

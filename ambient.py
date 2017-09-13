@@ -58,7 +58,7 @@ self.engine)
                730 : "Counter-Strike: Global Offensive",
    578080 : "Player Unknown's Battlegrounds"
   }
-
+        self.raw_data.title = self.raw_data.title.apply(lambda x: x if len(x) < 50 else x[:50] + "...")
 
     def _grab_db_conn(self):
         self.conn = psycopg2.connect("dbname={} user={} password={}".format(os.environ["DBNAME"], os.environ["DBUSER"], os.environ["DBPASS"]))
@@ -95,3 +95,19 @@ DO UPDATE SET votes = training.votes + 1;
         print(query)
         self.cur.execute(query)
         self._close_db_conn()
+
+    def vote_thread(self, thread_id, score):
+        self._grab_db_conn()
+        print("Voting thread {} as {}".format(thread_id, score))
+        query = """
+INSERT INTO training (content, response_num, thread_id, posted_on, score, votes)
+SELECT content, response_num, thread_id, to_timestamp(posted_on/1000), {}, 1 
+FROM posts 
+WHERE thread_id = {}
+ON CONFLICT (thread_id, response_num, score) 
+DO UPDATE SET votes = training.votes + 1;
+""".format(score, thread_id)
+        print(query)
+        self.cur.execute(query)
+        self._close_db_conn()
+

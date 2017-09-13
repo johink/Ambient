@@ -1,5 +1,6 @@
 <head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel='stylesheet' href='../static/style.css'>
 <title>Ambient Dashboard</title>
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -17,7 +18,11 @@ $.ajax({
 url: '/vote/post/down/'+thread_id+'/'+reply_num, 
 type:"POST",
 success: function(result){
-if(result == "Successful"){alert("SUCCESS!")}
+if(result == "Successful"){
+$("#trpost"+thread_id+reply_num).addClass("danger").removeClass("success");
+$("#trpost"+thread_id+reply_num + " .votedown").addClass("disableclick");
+$("#trpost"+thread_id+reply_num + " .voteup").removeClass("disableclick");
+}
 else{alert("Difficulty communicating with database.  Please try again later!")}
 }});
 }
@@ -26,54 +31,101 @@ $.ajax({
 url: '/vote/post/up/'+thread_id+'/'+reply_num, 
 type:"POST",
 success: function(result){
-if(result == "Successful"){alert("SUCCESS!")}
+if(result == "Successful"){
+$("#trpost"+thread_id+reply_num).addClass("success").removeClass("danger");
+$("#trpost"+thread_id+reply_num + " .voteup").addClass("disableclick");
+$("#trpost"+thread_id+reply_num + " .votedown").removeClass("disableclick");
+}
+else{alert("Difficulty communicating with database.  Please try again later!")}
+}});
+}
+votethreadup = function(thread_id){
+$.ajax({
+url: '/vote/thread/up/'+thread_id, 
+type:"POST",
+success: function(result){
+if(result == "Successful"){
+$("#tr"+thread_id).addClass("success").removeClass("danger");
+$("#tr"+thread_id + " .voteup").addClass("disableclick");
+$("#tr"+thread_id + " .votedown").removeClass("disableclick");
+}
+else{alert("Difficulty communicating with database.  Please try again later!")}
+}});
+}
+votethreaddown = function(thread_id){
+$.ajax({
+url: '/vote/thread/down/'+thread_id, 
+type:"POST",
+success: function(result){
+if(result == "Successful"){
+$("#tr"+thread_id).addClass("danger").removeClass("success");
+$("#tr"+thread_id + " .votedown").addClass("disableclick");
+$("#tr"+thread_id + " .voteup").removeClass("disableclick");
+}
 else{alert("Difficulty communicating with database.  Please try again later!")}
 }});
 }
 
+
 </script>
 </head>
 <div class="container" padding="20px">
-<h1>Ambient Dashboard</h1>
-
-<div class="navlinks">
-{% for item in other_links %} 
-<a href='/dashboard/{{item["game_id"]}}'>{{item['game_name']}}</a>
-{% endfor %}
-</div>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Ambient Dashboard</a>
+    </div>
+    <ul class="nav navbar-nav">
+      {% for item in other_links %} 
+      <li class='navlinkitem'><a href='/dashboard/{{item["game_id"]}}'>{{item['game_name']}}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
 
 <div class="threads">
 <h2>Threads</h2>
 
+<table class="table table-striped table-hover">
 {% for item in thread_data %}
+<tr id="tr{{item['thread_id']}}">
+<td>
 <div class="thread_item" id="{{item['thread_id']}}">
-<a href="#" onclick="displaythread({{item['thread_id']}});">
-<p class="author">{{ item['author_name'] }}</p>
-<p class="postedon">{{ item['posted_on'] }}</p>
-<p class="numreplies">{{ item['num_replies'] }}</p>
-<p class="title">{{ item['title'] }}</p>
+<span class="voteup"><a href="javascript:void(0);" onclick="votethreadup('{{item.thread_id}}');"><i class="glyphicon glyphicon-ok" title="This thread is useful"></i></a></span>
+<span class="votedown"><a href="javascript:void(0);" onclick="votethreaddown('{{item.thread_id}}');"><i class="glyphicon glyphicon-remove" title="This thread is not useful"></i></a></span>
+<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}');">
+<span class="title">{{ item['title'] }}</span> 
+<br/>by 
+<span class="author">{{ item['author_name'] }}</span>,
+<span class="postedon">{{ item['posted_on'] }}</span>
+<span class="numreplies">{{ item['num_replies'] }}</span> replies
 </a>
-<p class="votedown"><a href="/vote/thread/down/{{item['thread_id']}}">DOWN</a></p>
-<p class="voteup"><a href='/vote/thread/up/{{item["thread_id"]}}'>UP</a></p>
 </div>
-{% endfor %}          
-</tbody>
+</td>
+</tr>
+{% endfor %}
 </table>
 </div>
 <div class="posts">
 <h2>Posts</h2>
+<table class="table table-striped table-hover">
+
 {% for item in post_data %}
+<tr id="trpost{{item['thread_id']}}{{item['response_num']}}">
+<td>
 <div class="post_item" id="{{item['thread_id']}}{{item['response_num']}}">
-<a href="#" onclick="displaypost('{{item['thread_id']}}','{{item['response_num']}}');">
-<p class="author">{{ item['author_name'] }}</p>
-<p class="postedon">{{ item['posted_on'] }}</p>
-<p class="replyno">{{ item['response_num'] }}</p>
-<p class="title">{{ item['title'] }}</p>
-<p class="content">{{ item['content'] }}</p>
+<span class="voteup"><a href="javascript:void(0);" onclick="votepostup('{{item.thread_id}}','{{item.response_num}}');"><i class="glyphicon glyphicon-ok" title="This post is useful"></i></a></span>
+<span class="votedown"><a href="javascript:void(0);" onclick="votepostdown('{{item.thread_id}}', '{{item.response_num}}');"><i class="glyphicon glyphicon-remove" title="This post is not useful"></i></a></span>
+<a href="javascript:void(0);" onclick="displaypost('{{item.thread_id}}','{{item.response_num}}');">
+<span class="replyno">#{{ item['response_num'] }}</span> in <span class="posttitle">{{ item['title'] }}</span> 
+by <span class="author">{{ item['author_name'] }}</span>
+<span class="postedon">{{ item['posted_on'] }}</span>
+<span class="content">{{ item['content'] }}</span>
 </a>
-<p class="votedown"><a onclick="votepostdown('{{item.thread_id}}','{{item.response_num}}');">DOWN</a></p>
-<p class="voteup"><a onclick="votepostup('{{item.thread_id}}','{{item.response_num}}');">UP</a></p>
 </div>
+</td>
+</tr>
 {% endfor %}          
 </div>
 </div>
+
