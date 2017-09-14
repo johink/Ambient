@@ -1,17 +1,31 @@
 <head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel='stylesheet' href='../static/style.css'>
 <title>Ambient Dashboard</title>
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" 
+integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
+crossorigin="anonymous"></script>
+<link rel='stylesheet' href='../static/style.css'>
 <script>
-displaythread = function(thread_id){
-alert("displaying " + thread_id);
+displaythread = function(thread_id,pnum){
+  $.ajax({
+    url: '/thread/' + thread_id + '/' + pnum,
+    type: 'POST',
+    success: function(result){
+      render_subwindow(result);
+    }
+  });
 }
+
+render_subwindow = function(json_data){
+  alert(json_data);
+}
+
 displaypost = function(thread_id, reply_num){
-alert("displaying post #" + reply_num + " of thread " + thread_id);
+  return null;
 }
 votepostdown = function(thread_id, reply_num){
 $.ajax({
@@ -65,23 +79,60 @@ $("#tr"+thread_id + " .voteup").removeClass("disableclick");
 else{alert("Difficulty communicating with database.  Please try again later!")}
 }});
 }
-
-
 </script>
 </head>
-<div class="container" padding="20px">
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<img class="heading" src="../static/{{game_info.acronym}}.jpg">
+<div class="container">
+<nav class="navbar navbar-inverse navbar-fixed-top normalnav">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">Ambient Dashboard</a>
     </div>
     <ul class="nav navbar-nav">
       {% for item in other_links %} 
-      <li class='navlinkitem'><a href='/dashboard/{{item["game_id"]}}'>{{item['game_name']}}</a></li>
+      <li class='navlinkitem normalnav'><a href='/dashboard/{{item["game_id"]}}'>{{item['game_name']}}</a></li>
       {% endfor %}
     </ul>
   </div>
 </nav>
+<nav class="navbar navbar-inverse navbar-fixed-top responsivenav">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+      <li class="dropdown responsive">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Other Games
+        <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+      {% for item in other_links %} 
+      <li class='navlinkitem'><a href='/dashboard/{{item["game_id"]}}'>{{item['game_name']}}</a></li>
+      {% endfor %}
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="pagebody">
+<div class="summarystats">
+    <img class="plot" src="../static/{{game_info.gameid}}.png">
+<table class='table'>
+<thead>
+<th># of Posts</th>
+<th># of Users</th>
+<th>Most Prolific Poster</th>
+<th>Most Helpful Poster</th>
+<th>Most Common Words</th>
+<th>"Git Gud" Counter</th>
+</thead>
+<tbody>
+<tr>
+<td>{{summary_data.nposts}}</td>
+<td>{{summary_data.nusers}}</td>
+<td>{{user_data.frequent.name}} with {{user_data.frequent.posts}} posts</td>
+<td>{{user_data.helpful.name}} with score of {{(user_data.helpful.rating * 100)|round(1)}}</td>
+<td>{{topic_data.popwords}}</td>
+<td>{{topic_data.git_gud}}</td>
+</tr>
+</tbody>
+</table>
 
 <div class="threads">
 <h2>Threads</h2>
@@ -93,13 +144,13 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 <div class="thread_item" id="{{item['thread_id']}}">
 <span class="voteup"><a href="javascript:void(0);" onclick="votethreadup('{{item.thread_id}}');"><i class="glyphicon glyphicon-ok" title="This thread is useful"></i></a></span>
 <span class="votedown"><a href="javascript:void(0);" onclick="votethreaddown('{{item.thread_id}}');"><i class="glyphicon glyphicon-remove" title="This thread is not useful"></i></a></span>
-<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}');">
+<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}',1);">
 <span class="title">{{ item['title'] }}</span> 
 <br/>by 
 <span class="author">{{ item['author_name'] }}</span>,
-<span class="postedon">{{ item['posted_on'] }}</span>
 <span class="numreplies">{{ item['num_replies'] }}</span> replies
 </a>
+<span class="postedon">{{ item['posted_on'] }}</span>
 </div>
 </td>
 </tr>
@@ -119,13 +170,13 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 <a href="javascript:void(0);" onclick="displaypost('{{item.thread_id}}','{{item.response_num}}');">
 <span class="replyno">#{{ item['response_num'] }}</span> in <span class="posttitle">{{ item['title'] }}</span> 
 by <span class="author">{{ item['author_name'] }}</span>
-<span class="postedon">{{ item['posted_on'] }}</span>
 <span class="content">{{ item['content'] }}</span>
 </a>
+<span class="postedon">{{ item['posted_on'] }}</span>
 </div>
 </td>
 </tr>
 {% endfor %}          
 </div>
 </div>
-
+</div>

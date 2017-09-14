@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import numpy as np
 import sqlalchemy
+from collections import Counter
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 get_first = lambda x: x.iloc[0]
 
@@ -54,9 +56,9 @@ self.engine)
         self.thread_weights.posted_on = self.thread_weights.posted_on.apply(date_helper)
 
         self.mapper = {
-               570 : "DOTA 2",
-               730 : "Counter-Strike: Global Offensive",
-   578080 : "Player Unknown's Battlegrounds"
+               570 : ("DOTA 2", "DOTA2"),
+               730 : ("Counter-Strike: Global Offensive", "CSGO"),
+   578080 : ("Player Unknown's Battlegrounds","PUBG")
   }
         self.raw_data.title = self.raw_data.title.apply(lambda x: x if len(x) < 50 else x[:50] + "...")
 
@@ -79,8 +81,58 @@ self.engine)
         return self.raw_data[self.raw_data.game_id == game_id].sort_values('usefulness', ascending = False).head(100).to_dict('records')
 
     def get_other_links(self, game_id):
-        return [{"game_id" : gid, "game_name" : self.mapper[gid] } for gid in self.game_set if gid != game_id]
+        return [{"game_id" : gid, "game_name" : self.mapper[gid][0], 'game_abbrev':self.mapper[gid][1] } for gid in self.game_set if gid != game_id]
  
+    def get_user_stats(self, game_id):
+        aggdf = self.raw_data[self.raw_data.game_id == game_id].groupby('author_name').agg({'content':len, 'usefulness':np.mean})
+        quantity = aggdf.sort_values('content', ascending = False).head(1)
+        quality = aggdf.sort_values('usefulness', ascending = False).head(1)
+        quantity = {'name':quantity.index[0], 'posts':quantity.content.iloc[0]}
+        quality = {'name':quality.index[0], 'rating':quality.usefulness.iloc[0]}
+        return {'frequent':quantity, 'helpful':quality}
+
+    def get_topic_stats(self, game_id):
+        subdf = self.thread_weights[self.thread_weights.game_id == game_id]
+        nwhiny = 0
+        whiny_words = ['bs','wtf','bull','op','nerf']
+        ngitgud = 0
+        gitgud_words = [('git','gud'),('get','good'),('git','good')]
+        c = Counter()
+        for text in subdf.title:
+            words = set(text.split())
+            for word in whiny_words:
+                if word in words:
+                    nwhiny += 1
+                    break
+            c.update([word.lower() for word in words if word.lower() not in ENGLISH_STOP_WORDS and len(word) > 1])
+
+        subdf = self.raw_data[self.raw_data.game_id == game_id]
+        for text in subdf.content:
+            words = set(text.split())
+            for word in gitgud_words:
+                if word[0] in words and word[1] in words:
+                    ngitgud += 1
+                    break
+        return {"popwords":", ".join([item[0] for item in c.most_common(15)]),
+                "whiny_threads": nwhiny, "git_gud":ngitgud}
+
+    def get_summary_stats(self, game_id):
+        nusers = len(self.raw_data.author_name.unique())
+        nposts = len(self.raw_data)
+        return {"nposts":nposts, "nusers":nusers}
+
+    def get_thread_contents(self, thread_id, page_num):
+        df = pd.read_sql("""
+SELECT content, author_name, response_num, to_timestamp(posted_on/1000)
+FROM posts
+WHERE thread_id = {}
+UNION
+SELECT content, author_id, response_num, posted_on
+FROM training
+WHERE thread_id = {}
+""".format(thread_id, thread_id), self.engine)
+        return df.sort_values('response_num').iloc[page_num*25:24+page_num*25].to_dict('records')
+
     def vote_post(self, thread_id, response_num, score):
         self._grab_db_conn()
         print("Voting post #{} in thread {} as {}".format(response_num, thread_id, score))

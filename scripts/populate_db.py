@@ -51,8 +51,8 @@ thread_df.to_sql("threads", engine, if_exists = 'replace', index = False, dtype 
 post_df = pd.concat(pickle.load(open('../data/posts.pkl','rb')), axis = 0)
 post_df['score'] = (post_df.simscore > .1).astype(int)
 post_df['votes'] = 1
-post_df.drop(['game_id','bs_ratio','potty_ratio','simscore', 'author','author_id'], axis = 1, inplace = True)
-post_df.rename(columns = {'response_number':'response_num', 'time':'posted_on'}, inplace = True)
+post_df.drop(['game_id','bs_ratio','potty_ratio','simscore', 'author'], axis = 1, inplace = True)
+post_df.rename(columns = {'response_number':'response_num', 'time':'posted_on', 'author':'author_name'}, inplace = True)
 
 post_df = post_df[post_df.posted_on < "07/01/2017"]
 

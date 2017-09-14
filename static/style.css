@@ -1,9 +1,38 @@
 p {
-  
+  display: inline-block;
 }
 
 span {
   display: inline-block;
+}
+
+img.plot {
+  max-width:75vw;
+  display: block;
+  margin: 5 auto;
+}
+
+img.heading {
+  max-height:400px;
+  text-align: center;
+  margin: 50 auto 0 auto;
+  display: block;
+  left: -50;
+  max-width: 100vw;
+}
+
+h1 {
+  text-align: center;
+  font-size: 4em;
+  position: absolute;
+  top: 50px;
+  left: 0px;
+  width: 100vw;
+  min-height: 400px;
+  padding:0;
+  margin:0;
+  line-height: 700px;
+  color: white;
 }
 
 a {
@@ -18,6 +47,7 @@ a:hover {
 
 .glyphicon {
   font-size: 1.5em;
+  padding: 10px;
 }
 
 .glyphicon-ok:hover {
@@ -28,20 +58,23 @@ a:hover {
   color:red;
 }
 
+.pagebody {
+}
+
 .container {
   width: 90vw;
 }
 
 .threads {
   float: left;
+  display: inline;
   width: 40vw;
-  padding-top: 50px;
 }
 
 .posts {
   float: right;
+  display: inline;
   width: 40vw;
-  padding-top: 50px;
 }
 
 .author {
@@ -85,4 +118,51 @@ a:hover {
 
 .disableclick {
   pointer-events: none;
+}
+
+nav.responsivenav {
+  display: none;
+}
+
+nav.normalnav {
+  display: inline;
+}
+
+.responsive {
+  display: none;
+}
+
+.summarystats {
+  display: block;
+}
+
+.left{float:left;}
+.right{float:right;}
+
+@media only screen and (max-width: 960px) {
+  .responsive {
+    display: inline;
+    text-align: center;
+    font-size: 1.5em;
+  }
+
+  .summarystats {
+    display: none;
+  }
+
+  nav.responsivenav {
+    display: inline;
+  }
+
+  .posts {
+    display: none;
+  }
+
+  .posts, .threads {
+    width: 100%;
+  }
+
+  nav.normalnav {
+    display: none;
+}
 }

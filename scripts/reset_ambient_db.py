@@ -9,6 +9,7 @@ def create_db():
     cur = conn.cursor()
     cur.execute("DROP TABLE IF EXISTS posts;")
     cur.execute("DROP TABLE IF EXISTS threads;")
+    cur.execute("DROP TABLE IF EXISTS training;")
     cur.execute(
 """
 CREATE TABLE IF NOT EXISTS posts (

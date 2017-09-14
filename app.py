@@ -1,6 +1,6 @@
 #app.py
 from __future__ import division
-from flask import Flask, render_template, request
+from flask import Flask, render_template, jsonify
 import pandas as pd
 import time
 import random
@@ -29,8 +29,19 @@ def dashboard(gameid):
     thread_data = db.get_thread_data(gameid)
     post_data = db.get_post_data(gameid)
     other_links = db.get_other_links(gameid)
+    user_data = db.get_user_stats(gameid)
+    topic_data = db.get_topic_stats(gameid)
+    summary_data = db.get_summary_stats(gameid)
 
-    return render_template('dashboard.html', thread_data = thread_data, post_data = post_data, other_links = other_links)
+    return render_template('dashboard.html', 
+thread_data = thread_data, 
+post_data = post_data, 
+other_links = other_links,
+game_info = {'gameid':gameid, 'name':db.mapper[gameid][0],'acronym':db.mapper[gameid][1]},
+user_data = user_data,
+topic_data = topic_data,
+summary_data = summary_data
+)
 
 @app.route('/vote/thread/up/<int:threadid>', methods=['POST'])
 def vote_thread_up(threadid):
@@ -64,6 +75,11 @@ def vote_post_down(threadid, responsenum):
         return "Successful"
     except:
         return "DBError"
+
+@app.route('/thread/<int:threadid>', methods=["POST"])
+@app.route('/thread/<int:threadid>/<int:pagenum>', methods=["POST"])
+def display_thread(threadid, pagenum=1):
+    return jsonify(db.get_thread_contents(threadid, pagenum))
 
 if __name__ == '__main__':
     #running=True

@@ -23,7 +23,7 @@ print("Downloading new posts from s3...")
 
 s3 = boto3.resource('s3')
 sfp = s3.Bucket("steamforumposts")
-#sfp.download_file('test_posts.json', '../data/test_posts.json')
+sfp.download_file('test_posts.json', '../data/test_posts.json')
 #sfp.download_file('test_threads.json', '../data/test_threads.json')
 
 print("Reading in old data from Postgres...")
@@ -160,3 +160,11 @@ test_posts['usefulness'] = preds[:,1]
 
 print("Writing new posts to posts table...")
 test_posts.to_sql('posts', engine, if_exists = 'replace', index = False)
+
+connection = psycopg2.connect('dbname={} user={} password={}'.format(dbname, dbuser, dbpass))
+cur = connection.cursor()
+
+cur.execute("ALTER TABLE posts ADD PRIMARY KEY (thread_id, response_num);")
+connection.commit()
+cur.close()
+connection.close()
