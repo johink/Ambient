@@ -1,0 +1,16 @@
+<table class="table table-striped table-hover">
+{% for item in data %}
+<tr id="trpost{{item['thread_id']}}{{item['response_num']}}">
+<td>
+<div class="post_item" id="{{item['thread_id']}}{{item['response_num']}}">
+<span class="voteup"><a href="javascript:void(0);" onclick="votepostup('{{item.thread_id}}','{{item.response_num}}');"><i class="glyphicon glyphicon-ok" title="This post is useful"></i></a></span>
+<span class="votedown"><a href="javascript:void(0);" onclick="votepostdown('{{item.thread_id}}', '{{item.response_num}}');"><i class="glyphicon glyphicon-remove" title="This post is not useful"></i></a></span>
+<span class="replyno">#{{ item['response_num'] }}</span>
+by <span class="author">{{ item['author_name'] }}</span>
+<span class="content">{{ item['content'] }}</span>
+<span class="postedon">{{ item['posted_on'] }}</span>
+</div>
+</td>
+</tr>
+{% endfor %}
+</table>

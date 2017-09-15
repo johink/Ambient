@@ -20,12 +20,20 @@ displaythread = function(thread_id,pnum){
   });
 }
 
-render_subwindow = function(json_data){
-  alert(json_data);
+render_subwindow = function(result){
+  $(".subwindow").html(result).css('display','inline-block');
+  $(".overlay").css('display', 'inline');
 }
+$(document).click(function(e){
+
+  if($(e.target).closest('.subwindow').length != 0) return false;
+  $(".subwindow").html(null).css('display', 'none');
+  $(".overlay").css('display', 'none');
+});
 
 displaypost = function(thread_id, reply_num){
-  return null;
+  displaythread(thread_id,parseInt(reply_num/25));
+  $("#trpost"+thread_id+reply_num).addClass("selectedpost");
 }
 votepostdown = function(thread_id, reply_num){
 $.ajax({
@@ -81,6 +89,7 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 }
 </script>
 </head>
+<div class="overlay"></div>
 <img class="heading" src="../static/{{game_info.acronym}}.jpg">
 <div class="container">
 <nav class="navbar navbar-inverse navbar-fixed-top normalnav">
@@ -133,7 +142,7 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 </tr>
 </tbody>
 </table>
-
+<div class='subwindow'></div>
 <div class="threads">
 <h2>Threads</h2>
 
@@ -144,7 +153,7 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 <div class="thread_item" id="{{item['thread_id']}}">
 <span class="voteup"><a href="javascript:void(0);" onclick="votethreadup('{{item.thread_id}}');"><i class="glyphicon glyphicon-ok" title="This thread is useful"></i></a></span>
 <span class="votedown"><a href="javascript:void(0);" onclick="votethreaddown('{{item.thread_id}}');"><i class="glyphicon glyphicon-remove" title="This thread is not useful"></i></a></span>
-<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}',1);">
+<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}',0);">
 <span class="title">{{ item['title'] }}</span> 
 <br/>by 
 <span class="author">{{ item['author_name'] }}</span>,
@@ -177,6 +186,7 @@ by <span class="author">{{ item['author_name'] }}</span>
 </td>
 </tr>
 {% endfor %}          
+</table>
 </div>
 </div>
 </div>

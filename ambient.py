@@ -123,22 +123,24 @@ self.engine)
 
     def get_thread_contents(self, thread_id, page_num):
         df = pd.read_sql("""
-SELECT content, author_name, response_num, to_timestamp(posted_on/1000)
+SELECT DISTINCT * FROM (
+SELECT thread_id, content, author_name, response_num, to_timestamp(posted_on/1000) AS posted_on
 FROM posts
 WHERE thread_id = {}
 UNION
-SELECT content, author_id, response_num, posted_on
+SELECT thread_id, content, author_id, response_num, posted_on
 FROM training
-WHERE thread_id = {}
+WHERE thread_id = {}) as b
 """.format(thread_id, thread_id), self.engine)
+        df.posted_on = pd.to_datetime(df.posted_on)
         return df.sort_values('response_num').iloc[page_num*25:24+page_num*25].to_dict('records')
 
     def vote_post(self, thread_id, response_num, score):
         self._grab_db_conn()
         print("Voting post #{} in thread {} as {}".format(response_num, thread_id, score))
         query = """
-INSERT INTO training (content, response_num, thread_id, posted_on, score, votes)
-SELECT content, response_num, thread_id, to_timestamp(posted_on/1000), {}, 1 
+INSERT INTO training (content, response_num, thread_id, posted_on, author_id, score, votes)
+SELECT content, response_num, thread_id, to_timestamp(posted_on/1000), author_name, {}, 1 
 FROM posts 
 WHERE thread_id = {} AND response_num = {} 
 ON CONFLICT (thread_id, response_num, score) 

@@ -58,7 +58,42 @@ a:hover {
   color:red;
 }
 
-.pagebody {
+.selectedpost {
+  border: 2px red solid;
+}
+
+.subwindow {
+  position: absolute;
+  top: 100px;
+  right: 50px;
+  width: 60vw;
+  height: 60vh;
+  min-width: 400px;
+  background-color: #fff;
+  z-index: 999;
+  display: none;
+}
+
+.subwindow tr {
+  background-color: #fff;
+}
+
+.subwindow td {
+  border: 2px solid black;
+}
+
+.overlay {
+    position:fixed;
+    display:none; 
+
+    /* color with alpha channel */
+    background-color: rgba(0, 0, 0, 0.7); /* 0.7 = 70% opacity */
+
+    /* stretch to screen edges */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .container {

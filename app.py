@@ -79,7 +79,9 @@ def vote_post_down(threadid, responsenum):
 @app.route('/thread/<int:threadid>', methods=["POST"])
 @app.route('/thread/<int:threadid>/<int:pagenum>', methods=["POST"])
 def display_thread(threadid, pagenum=1):
-    return jsonify(db.get_thread_contents(threadid, pagenum))
+    data = db.get_thread_contents(threadid, pagenum)
+    
+    return render_template('popup.html', data = data)
 
 if __name__ == '__main__':
     #running=True
