@@ -27,7 +27,7 @@ The first big hurdle I faced was the fact that I did not have a response (useful
 
 Exploring the data, I found some interesting facts.  For one, the games had very different lifespans:  DOTA2 had several years of historical posts available, but PUBG had only about half a year.  People who were the OP (original poster) of a thread were generally more helpful than repliers.  Even though Steam allows users to change their forum names, the overwhelming majority (over 99%) of users had posted under just a single name.
 
-To clean the data, I removed <blockquote> elements and hyperlinks, before applying a stemmed version of sklearn's TfidfVectorizer.  Additionally, I created features representing the poster's capitalization and foul language usage, as well as the lengths of the post content and title.
+To clean the data, I removed blockquote elements and hyperlinks, before applying a stemmed version of sklearn's TfidfVectorizer.  Additionally, I created features representing the poster's capitalization and foul language usage, as well as the lengths of the post content and title.
 
 ### Model building
 I built a random forest model out of my engineered features + vectorized features from the post title and content.  This model had the best performance out of the box.  Given more time, I would have tried a variety of modeling methodologies (logistic regression, SVM, neural network), but this took a backseat as I wanted to spend more time on the dashboard application and automation in AWS.
