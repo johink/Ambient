@@ -10,12 +10,14 @@ integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7T
 crossorigin="anonymous"></script>
 <link rel='stylesheet' href='../static/style.css'>
 <script>
-displaythread = function(thread_id,pnum){
+displaythread = function(thread_id,pnum,reply_num){
   $.ajax({
     url: '/thread/' + thread_id + '/' + pnum,
     type: 'POST',
     success: function(result){
       render_subwindow(result);
+      
+      $(".subwindow").scrollTop(0)
     }
   });
 }
@@ -32,7 +34,7 @@ $(document).click(function(e){
 });
 
 displaypost = function(thread_id, reply_num){
-  displaythread(thread_id,parseInt(reply_num/25));
+  displaythread(thread_id,parseInt(reply_num/25), reply_num);
   $("#trpost"+thread_id+reply_num).addClass("selectedpost");
 }
 votepostdown = function(thread_id, reply_num){
@@ -153,7 +155,7 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 <div class="thread_item" id="{{item['thread_id']}}">
 <span class="voteup"><a href="javascript:void(0);" onclick="votethreadup('{{item.thread_id}}');"><i class="glyphicon glyphicon-ok" title="This thread is useful"></i></a></span>
 <span class="votedown"><a href="javascript:void(0);" onclick="votethreaddown('{{item.thread_id}}');"><i class="glyphicon glyphicon-remove" title="This thread is not useful"></i></a></span>
-<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}',0);">
+<a href="javascript:void(0);" onclick="displaythread('{{item.thread_id}}',0,0);">
 <span class="title">{{ item['title'] }}</span> 
 <br/>by 
 <span class="author">{{ item['author_name'] }}</span>,
