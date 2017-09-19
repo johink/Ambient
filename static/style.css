@@ -63,8 +63,9 @@ a:hover {
 }
 
 .subwindow {
-  position: absolute;
+  position: fixed;
   top: 100px;
+  bottom: 100px;
   right: 50px;
   width: 60vw;
   height: 60vh;
@@ -72,6 +73,7 @@ a:hover {
   background-color: #fff;
   z-index: 999;
   display: none;
+  overflow-y: scroll;
 }
 
 .subwindow tr {

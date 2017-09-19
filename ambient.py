@@ -11,7 +11,7 @@ get_first = lambda x: x.iloc[0]
 def date_helper(post_time):
     datediff = pd.datetime.now() - post_time
     if datediff.days == 0:
-        hours = datediff.total_seconds() / 3600
+        hours = int(datediff.total_seconds() // 3600)
         if hours == 0:
             return "Now"
         elif hours == 1:
@@ -41,7 +41,7 @@ FROM posts
 INNER JOIN threads ON posts.thread_id = threads.thread_id;
 """, 
 self.engine)
-        self.raw_data.posted_on = pd.to_datetime(self.raw_data.posted_on, unit='ms')
+        self.raw_data.posted_on = pd.to_datetime(self.raw_data.posted_on, unit='s')
         self.game_set = set(self.raw_data.game_id.unique())
 
         self.thread_weights = self.raw_data.groupby('thread_id').agg({'usefulness':np.mean, 'response_num': len, 'title':get_first, 'game_id':get_first, 'author_name':get_first, 'num_replies':get_first, 'creation_date':get_first})
@@ -124,16 +124,17 @@ self.engine)
     def get_thread_contents(self, thread_id, page_num):
         df = pd.read_sql("""
 SELECT DISTINCT * FROM (
-SELECT thread_id, content, author_name, response_num, to_timestamp(posted_on/1000) AS posted_on
+SELECT thread_id, content, author_name, response_num, posted_on AS posted_on
 FROM posts
 WHERE thread_id = {}
 UNION
-SELECT thread_id, content, author_id, response_num, posted_on
+SELECT thread_id, content, author_id, response_num, extract(epoch from posted_on) as posted_on
 FROM training
 WHERE thread_id = {}) as b
 """.format(thread_id, thread_id), self.engine)
-        df.posted_on = pd.to_datetime(df.posted_on)
-        return df.sort_values('response_num').iloc[page_num*25:24+page_num*25].to_dict('records')
+        df.posted_on = pd.to_datetime(df.posted_on, unit = 's')
+        n_posts = len(df)
+        return df.sort_values('response_num').iloc[page_num*25:24+page_num*25].to_dict('records'), n_posts
 
     def vote_post(self, thread_id, response_num, score):
         self._grab_db_conn()

@@ -1,3 +1,9 @@
+{% if prevpage %}
+<input type='button' value="Previous Page" onclick="displaythread('{{threadid}}',{{ prevpage }},0);">
+{% endif %}
+{% if nextpage %}
+<input type='button' value="Next Page" onclick="displaythread('{{threadid}}',{{ nextpage }},0);">
+{% endif %}
 <table class="table table-striped table-hover">
 {% for item in data %}
 <tr id="trpost{{item['thread_id']}}{{item['response_num']}}">

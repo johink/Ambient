@@ -79,9 +79,16 @@ def vote_post_down(threadid, responsenum):
 @app.route('/thread/<int:threadid>', methods=["POST"])
 @app.route('/thread/<int:threadid>/<int:pagenum>', methods=["POST"])
 def display_thread(threadid, pagenum=1):
-    data = db.get_thread_contents(threadid, pagenum)
+    data, nposts = db.get_thread_contents(threadid, pagenum)
+    total_pages = nposts // 25 + 1
+    next_page = None
+    prev_page = None
+    if total_pages > pagenum + 1:
+        next_page = str(pagenum + 1)
+    if pagenum > 0:
+        prev_page = str(pagenum - 1)
     
-    return render_template('popup.html', data = data)
+    return render_template('popup.html', data = data, prevpage = prev_page, nextpage = next_page, threadid = threadid)
 
 if __name__ == '__main__':
     #running=True
