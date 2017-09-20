@@ -1,6 +1,8 @@
 # Ambient
 ### Cut out the noise and find actionable forum posts
 
+![Ambient Dashboard](/images/dashboard-sm.png)
+
 User feedback can be extremely valuable, but often it is hard to find amidst the sea of complaining and trolling on web forums.  My goal was to attempt to make this feedback easier to find.  As an avid gamer, I chose to focus my efforts on Steam's gaming forums, and to reduce the scope I pulled posts for the three most popular games.
 
 The three games are:
