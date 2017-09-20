@@ -123,18 +123,13 @@ self.engine)
 
     def get_thread_contents(self, thread_id, page_num):
         df = pd.read_sql("""
-SELECT DISTINCT * FROM (
-SELECT thread_id, content, author_name, response_num, posted_on AS posted_on
+SELECT thread_id, content, author_name, response_num, posted_on
 FROM posts
 WHERE thread_id = {}
-UNION
-SELECT thread_id, content, author_id, response_num, extract(epoch from posted_on) as posted_on
-FROM training
-WHERE thread_id = {}) as b
 """.format(thread_id, thread_id), self.engine)
         df.posted_on = pd.to_datetime(df.posted_on, unit = 's')
         n_posts = len(df)
-        return df.sort_values('response_num').iloc[page_num*25:24+page_num*25].to_dict('records'), n_posts
+        return df.sort_values('response_num').iloc[page_num*25:(page_num+1)*25].to_dict('records'), n_posts
 
     def vote_post(self, thread_id, response_num, score):
         self._grab_db_conn()

@@ -20,7 +20,7 @@ def index():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard_default():
-    return dashboard(570)
+    return dashboard(578080)
 
 @app.route('/dashboard/<int:gameid>', methods=['GET'])
 def dashboard(gameid):

@@ -2,6 +2,7 @@ import boto3
 import os
 import time
 import generate_model
+import gen_acty_chart
 
 os.chdir("/home/ubuntu/")
 
@@ -27,5 +28,5 @@ while True:
 
 print("Scraping finished, running generate_model.py")
 generate_model.main()
-
+gen_acty_chart.main()
 

@@ -1,4 +1,21 @@
 <head>
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-106760358-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments)};
+  gtag('js', new Date());
+  gtag('config', 'UA-106760358-1');
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N5QWFGW');</script>
+<!-- End Google Tag Manager -->
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <title>Ambient Dashboard</title>
 <script
@@ -90,14 +107,21 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 }});
 }
 </script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N5QWFGW"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
 <div class="overlay"></div>
 <img class="heading" src="../static/{{game_info.acronym}}.jpg">
 <div class="container">
 <nav class="navbar navbar-inverse navbar-fixed-top normalnav">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Ambient Dashboard</a>
+      <a class="navbar-brand" href="/">Ambient</a>
     </div>
     <ul class="nav navbar-nav">
       {% for item in other_links %} 
@@ -123,27 +147,28 @@ else{alert("Difficulty communicating with database.  Please try again later!")}
 </nav>
 <div class="pagebody">
 <div class="summarystats">
-    <img class="plot" src="../static/{{game_info.gameid}}.png">
-<table class='table'>
-<thead>
-<th># of Posts</th>
-<th># of Users</th>
-<th>Most Prolific Poster</th>
-<th>Most Helpful Poster</th>
-<th>Most Common Words</th>
-<th>"Git Gud" Counter</th>
-</thead>
-<tbody>
-<tr>
-<td>{{summary_data.nposts}}</td>
-<td>{{summary_data.nusers}}</td>
-<td>{{user_data.frequent.name}} with {{user_data.frequent.posts}} posts</td>
-<td>{{user_data.helpful.name}} with score of {{(user_data.helpful.rating * 100)|round(1)}}</td>
-<td>{{topic_data.popwords}}</td>
-<td>{{topic_data.git_gud}}</td>
-</tr>
-</tbody>
-</table>
+  <img class="plot" src="../static/{{game_info.gameid}}.png">
+  <table class='table'>
+  <thead>
+  <th># of Posts</th>
+  <th># of Users</th>
+  <th>Most Prolific Poster</th>
+  <th>Most Helpful Poster</th>
+  <th>Most Common Words</th>
+  <th>"Git Gud" Counter</th>
+  </thead>
+  <tbody>
+  <tr>
+  <td>{{summary_data.nposts}}</td>
+  <td>{{summary_data.nusers}}</td>
+  <td>{{user_data.frequent.name}} with {{user_data.frequent.posts}} posts</td>
+  <td>{{user_data.helpful.name}} with score of {{(user_data.helpful.rating * 100)|round(1)}}</td>
+  <td>{{topic_data.popwords}}</td>
+  <td>{{topic_data.git_gud}}</td>
+  </tr>
+  </tbody>
+  </table>
+</div>
 <div class='subwindow'></div>
 <div class="threads">
 <h2>Threads</h2>
@@ -192,3 +217,4 @@ by <span class="author">{{ item['author_name'] }}</span>
 </div>
 </div>
 </div>
+</body>
